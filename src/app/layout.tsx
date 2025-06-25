@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AppHeader } from '@/components/shared/app-sidebar';
 import { Toaster } from '@/components/ui/toaster';
+import { AppFooter } from '@/components/shared/app-footer';
 
 export const metadata: Metadata = {
   title: 'SweetMeSoft MultiTool Suite',
@@ -27,9 +28,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased flex flex-col min-h-screen">
+      <body className="flex flex-col min-h-screen font-body antialiased">
         <AppHeader />
         <main className="container flex-1 py-8">{children}</main>
+        <AppFooter />
         <Toaster />
       </body>
     </html>
