@@ -15,6 +15,13 @@ import { Label } from '@/components/ui/label';
 import { PageHeader } from '@/components/shared/page-header';
 import { UploadCloud, File, X, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function ExcelToSqlPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -23,11 +30,44 @@ export default function ExcelToSqlPage() {
   const [isConverting, setIsConverting] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const [sheetNames, setSheetNames] = useState<string[]>([]);
+  const [selectedSheet, setSelectedSheet] = useState('');
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setFile(event.target.files[0]);
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
       setSqlOutput('');
+      setSheetNames([]);
+      setSelectedSheet('');
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          const workbook = xlsx.read(data, { type: 'binary' });
+          const names = workbook.SheetNames;
+          setSheetNames(names);
+          if (names.length > 0) {
+            setSelectedSheet(names[0]);
+          }
+        } catch (error) {
+          console.error('Error reading sheet names:', error);
+          toast({
+            title: 'Error al leer el archivo',
+            description: 'No se pudieron leer las hojas del archivo de Excel.',
+            variant: 'destructive',
+          });
+        }
+      };
+      reader.onerror = () => {
+        toast({
+          title: 'Error de lectura',
+          description: 'No se pudo leer el archivo.',
+          variant: 'destructive',
+        });
+      };
+      reader.readAsBinaryString(selectedFile);
     }
   };
 
@@ -36,6 +76,14 @@ export default function ExcelToSqlPage() {
       toast({
         title: 'Ningún archivo seleccionado',
         description: 'Por favor, selecciona un archivo de Excel para convertir.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (!selectedSheet) {
+      toast({
+        title: 'Ninguna hoja seleccionada',
+        description: 'Por favor, selecciona una hoja para convertir.',
         variant: 'destructive',
       });
       return;
@@ -56,14 +104,13 @@ export default function ExcelToSqlPage() {
       try {
         const data = e.target?.result;
         const workbook = xlsx.read(data, { type: 'binary' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
+        const worksheet = workbook.Sheets[selectedSheet];
         const json = xlsx.utils.sheet_to_json<any>(worksheet);
 
         if (json.length === 0) {
           toast({
-            title: 'Archivo vacío',
-            description: 'El archivo de Excel no contiene datos.',
+            title: 'Hoja vacía',
+            description: 'La hoja de Excel seleccionada no contiene datos.',
             variant: 'destructive',
           });
           setIsConverting(false);
@@ -185,6 +232,8 @@ export default function ExcelToSqlPage() {
                     onClick={() => {
                       setFile(null);
                       setSqlOutput('');
+                      setSheetNames([]);
+                      setSelectedSheet('');
                     }}
                   >
                     <X className="w-4 h-4" />
@@ -193,8 +242,26 @@ export default function ExcelToSqlPage() {
               )}
             </div>
 
+            {file && sheetNames.length > 0 && (
+              <div className="space-y-2">
+                <Label>2. Selecciona la hoja</Label>
+                <Select value={selectedSheet} onValueChange={setSelectedSheet}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona una hoja" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sheetNames.map((sheet) => (
+                      <SelectItem key={sheet} value={sheet}>
+                        {sheet}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div className="space-y-2">
-              <Label htmlFor="table-name">2. Nombre de la tabla</Label>
+              <Label htmlFor="table-name">3. Nombre de la tabla</Label>
               <Input
                 id="table-name"
                 type="text"
@@ -206,7 +273,9 @@ export default function ExcelToSqlPage() {
 
             <Button
               onClick={handleConvert}
-              disabled={!file || !tableName.trim() || isConverting}
+              disabled={
+                !file || !tableName.trim() || !selectedSheet || isConverting
+              }
               className="w-full bg-primary hover:bg-primary/90"
             >
               {isConverting ? 'Convirtiendo...' : 'Convertir a SQL'}
@@ -217,7 +286,7 @@ export default function ExcelToSqlPage() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
-                <CardTitle>3. Salida SQL</CardTitle>
+                <CardTitle>4. Salida SQL</CardTitle>
                 <CardDescription>
                   Tu código SQL generado aparecerá aquí.
                 </CardDescription>
