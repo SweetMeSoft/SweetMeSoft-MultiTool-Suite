@@ -1,7 +1,7 @@
-
 'use client';
 
 import { useState } from 'react';
+import * as xlsx from 'xlsx';
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export default function ExcelToSqlPage() {
   const [file, setFile] = useState<File | null>(null);
+  const [tableName, setTableName] = useState('nombre_de_la_tabla');
   const [sqlOutput, setSqlOutput] = useState('');
   const [isConverting, setIsConverting] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -39,13 +40,81 @@ export default function ExcelToSqlPage() {
       });
       return;
     }
+    if (!tableName.trim()) {
+      toast({
+        title: 'Nombre de tabla inválido',
+        description: 'Por favor, introduce un nombre para la tabla.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsConverting(true);
-    // Mock conversion
-    setTimeout(() => {
-      const mockSql = `INSERT INTO nombre_de_tu_tabla (columna1, columna2, columna3) VALUES\n('dato1', 'dato2', 'dato3'),\n('dato4', 'dato5', 'dato6'),\n('dato7', 'dato8', 'dato9');\n-- Estos son datos de prueba basados en '${file.name}'. La detección automática de columnas es simulada.`;
-      setSqlOutput(mockSql);
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const data = e.target?.result;
+        const workbook = xlsx.read(data, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = xlsx.utils.sheet_to_json<any>(worksheet);
+
+        if (json.length === 0) {
+          toast({
+            title: 'Archivo vacío',
+            description: 'El archivo de Excel no contiene datos.',
+            variant: 'destructive',
+          });
+          setIsConverting(false);
+          return;
+        }
+
+        const headers = Object.keys(json[0]);
+        const escapedTableName = `\`${tableName.trim()}\``;
+        const escapedHeaders = headers.map((h) => `\`${h}\``).join(', ');
+
+        const values = json
+          .map((row) => {
+            const rowValues = headers
+              .map((header) => {
+                const value = row[header];
+                if (value === null || value === undefined) {
+                  return 'NULL';
+                }
+                // Escape single quotes by doubling them
+                return `'${String(value).replace(/'/g, "''")}'`;
+              })
+              .join(', ');
+            return `(${rowValues})`;
+          })
+          .join(',\n');
+
+        const sql = `INSERT INTO ${escapedTableName} (${escapedHeaders}) VALUES\n${values};`;
+        setSqlOutput(sql);
+      } catch (error) {
+        console.error('Error al convertir el archivo:', error);
+        toast({
+          title: 'Error de conversión',
+          description:
+            'No se pudo procesar el archivo. Asegúrate de que sea un archivo de Excel válido.',
+          variant: 'destructive',
+        });
+      } finally {
+        setIsConverting(false);
+      }
+    };
+
+    reader.onerror = () => {
+      toast({
+        title: 'Error de lectura',
+        description: 'No se pudo leer el archivo.',
+        variant: 'destructive',
+      });
       setIsConverting(false);
-    }, 1500);
+    };
+
+    reader.readAsBinaryString(file);
   };
 
   const copyToClipboard = () => {
@@ -69,60 +138,75 @@ export default function ExcelToSqlPage() {
       <div className="grid gap-8 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>1. Sube tu archivo</CardTitle>
+            <CardTitle>Configuración</CardTitle>
             <CardDescription>
-              Selecciona el archivo .xlsx o .xls que deseas convertir.
+              Completa los siguientes pasos para generar tu script SQL.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-center w-full">
-              <Label
-                htmlFor="dropzone-file"
-                className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-background transition-colors"
-              >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
-                  <p className="mb-2 text-sm text-muted-foreground">
-                    <span className="font-semibold">Haz clic para subir</span> o
-                    arrastra y suelta
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    XLSX, XLS (MAX. 5MB)
-                  </p>
-                </div>
-                <Input
-                  id="dropzone-file"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                  accept=".xlsx, .xls"
-                />
-              </Label>
-            </div>
-            {file && (
-              <div className="flex items-center justify-between p-3 border rounded-md bg-background">
-                <div className="flex items-center gap-2 overflow-hidden">
-                  <File className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-sm font-medium truncate">
-                    {file.name}
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 flex-shrink-0"
-                  onClick={() => {
-                    setFile(null);
-                    setSqlOutput('');
-                  }}
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label>1. Sube tu archivo</Label>
+              <div className="flex items-center justify-center w-full">
+                <Label
+                  htmlFor="dropzone-file"
+                  className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-background transition-colors"
                 >
-                  <X className="w-4 h-4" />
-                </Button>
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <UploadCloud className="w-8 h-8 mb-3 text-muted-foreground" />
+                    <p className="mb-2 text-sm text-muted-foreground">
+                      <span className="font-semibold">Haz clic para subir</span> o
+                      arrastra y suelta
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      XLSX, XLS (MAX. 5MB)
+                    </p>
+                  </div>
+                  <Input
+                    id="dropzone-file"
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept=".xlsx, .xls"
+                  />
+                </Label>
               </div>
-            )}
+              {file && (
+                <div className="flex items-center justify-between p-3 border rounded-md bg-background">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <File className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-sm font-medium truncate">
+                      {file.name}
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 flex-shrink-0"
+                    onClick={() => {
+                      setFile(null);
+                      setSqlOutput('');
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="table-name">2. Nombre de la tabla</Label>
+              <Input
+                id="table-name"
+                type="text"
+                placeholder="p. ej., clientes"
+                value={tableName}
+                onChange={(e) => setTableName(e.target.value)}
+              />
+            </div>
+
             <Button
               onClick={handleConvert}
-              disabled={!file || isConverting}
+              disabled={!file || !tableName.trim() || isConverting}
               className="w-full bg-primary hover:bg-primary/90"
             >
               {isConverting ? 'Convirtiendo...' : 'Convertir a SQL'}
@@ -133,7 +217,7 @@ export default function ExcelToSqlPage() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
-                <CardTitle>2. Salida SQL</CardTitle>
+                <CardTitle>3. Salida SQL</CardTitle>
                 <CardDescription>
                   Tu código SQL generado aparecerá aquí.
                 </CardDescription>
