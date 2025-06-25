@@ -4,21 +4,21 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarFooter,
-} from '@/components/ui/sidebar';
-import {
   LayoutGrid,
   FileSpreadsheet,
   Braces,
   Scissors,
   Code2,
+  Menu,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+} from '@/components/ui/sheet';
+import { useState } from 'react';
 
 const links = [
   { href: '/', label: 'Dashboard', icon: LayoutGrid },
@@ -27,40 +27,68 @@ const links = [
   { href: '/excel-splitter', label: 'Excel Splitter', icon: Scissors },
 ];
 
-export function AppSidebar() {
+export function AppHeader() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <Sidebar>
-      <SidebarHeader className="p-4">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary rounded-lg p-2 w-10 h-10 flex items-center justify-center">
-            <Code2 className="text-primary-foreground" />
-          </div>
-          <h1 className="font-semibold text-lg text-primary">SweetMeSoft</h1>
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
+      <div className="container flex h-16 items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <Code2 className="h-6 w-6 text-primary" />
+          <span className="font-bold text-primary">SweetMeSoft</span>
+        </Link>
+        <nav className="hidden items-center gap-6 text-sm md:flex">
           {links.map((link) => (
-            <SidebarMenuItem key={link.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === link.href}
-                className="data-[active=true]:bg-primary data-[active=true]:text-primary-foreground hover:bg-muted"
-              >
-                <Link href={link.href}>
-                  <link.icon className="size-4" />
-                  <span>{link.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`transition-colors hover:text-foreground/80 ${
+                pathname === link.href ? 'text-foreground' : 'text-foreground/60'
+              }`}
+            >
+              {link.label}
+            </Link>
           ))}
-        </SidebarMenu>
-      </SidebarContent>
-      <SidebarFooter className="p-4 text-center text-xs text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} SweetMeSoft. All Rights Reserved.</p>
-      </SidebarFooter>
-    </Sidebar>
+        </nav>
+        <div className="md:hidden">
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Open Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <div className="p-4">
+                <Link
+                  href="/"
+                  className="mb-8 flex items-center gap-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Code2 className="h-6 w-6 text-primary" />
+                  <span className="font-bold text-primary">SweetMeSoft</span>
+                </Link>
+                <nav className="flex flex-col gap-4">
+                  {links.map((link) => (
+                    <SheetClose asChild key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={`-mx-3 flex items-center gap-4 rounded-lg px-3 py-2 text-muted-foreground hover:text-foreground ${
+                          pathname === link.href ? 'bg-muted text-foreground' : ''
+                        }`}
+                      >
+                        <link.icon className="h-5 w-5" />
+                        {link.label}
+                      </Link>
+                    </SheetClose>
+                  ))}
+                </nav>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+    </header>
   );
 }

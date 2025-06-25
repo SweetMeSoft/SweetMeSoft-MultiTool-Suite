@@ -58,7 +58,7 @@ const ToolCard = ({ tool }: { tool: Tool }) => (
 
 export default function Home() {
   return (
-    <main className="flex-1 p-4 sm:p-6 md:p-8">
+    <main>
       <div className="mb-8 space-y-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           MultiTool Suite Dashboard

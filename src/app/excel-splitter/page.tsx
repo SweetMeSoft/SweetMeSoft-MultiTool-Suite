@@ -62,7 +62,7 @@ export default function ExcelSplitterPage() {
   };
 
   return (
-    <main className="flex-1 p-4 sm:p-6 md:p-8">
+    <main>
       <PageHeader
         title="Excel Splitter"
         description="Split a large Excel file into smaller files and download as a ZIP archive."

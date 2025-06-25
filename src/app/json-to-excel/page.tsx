@@ -49,7 +49,7 @@ export default function JsonToExcelPage() {
   };
 
   return (
-    <main className="flex-1 p-4 sm:p-6 md:p-8">
+    <main>
       <PageHeader
         title="JSON to Excel Converter"
         description="Paste your JSON data to convert it into an Excel spreadsheet."
