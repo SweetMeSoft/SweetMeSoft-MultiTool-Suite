@@ -6,7 +6,7 @@ import { AppFooter } from '@/components/shared/app-footer';
 
 export const metadata: Metadata = {
   title: 'SweetMeSoft MultiTool Suite',
-  description: 'A suite of powerful and easy-to-use tools.',
+  description: 'Un conjunto de herramientas potentes y fáciles de usar.',
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

@@ -31,16 +31,16 @@ export default function ExcelSplitterPage() {
   const handleSplit = () => {
     if (!file) {
       toast({
-        title: 'No file selected',
-        description: 'Please select an Excel file to split.',
+        title: 'Ningún archivo seleccionado',
+        description: 'Por favor, selecciona un archivo de Excel para dividir.',
         variant: 'destructive',
       });
       return;
     }
     if (!rowsPerFile || parseInt(rowsPerFile) <= 0) {
       toast({
-        title: 'Invalid row count',
-        description: 'Please enter a positive number of rows per file.',
+        title: 'Número de filas inválido',
+        description: 'Por favor, introduce un número positivo de filas por archivo.',
         variant: 'destructive',
       });
       return;
@@ -48,15 +48,15 @@ export default function ExcelSplitterPage() {
 
     setIsSplitting(true);
     toast({
-      title: 'Splitting in progress...',
-      description: 'Your ZIP archive will be downloaded shortly.',
+      title: 'División en progreso...',
+      description: 'Tu archivo ZIP se descargará en breve.',
     });
     setTimeout(() => {
       // In a real app, this would trigger a file download of the ZIP.
       setIsSplitting(false);
       toast({
-        title: 'Splitting Complete!',
-        description: `Mock ZIP archive of ${file.name} split into files of ${rowsPerFile} rows is ready for download.`,
+        title: '¡División completada!',
+        description: `El archivo ZIP de prueba de ${file.name} dividido en archivos de ${rowsPerFile} filas está listo para descargar.`,
       });
     }, 2500);
   };
@@ -64,20 +64,19 @@ export default function ExcelSplitterPage() {
   return (
     <main>
       <PageHeader
-        title="Excel Splitter"
-        description="Split a large Excel file into smaller files and download as a ZIP archive."
+        title="Divisor de Excel"
+        description="Divide un archivo grande de Excel en archivos más pequeños y descárgalos como un archivo ZIP."
       />
       <Card>
         <CardHeader>
-          <CardTitle>Split Your Excel File</CardTitle>
+          <CardTitle>Divide tu archivo de Excel</CardTitle>
           <CardDescription>
-            Upload your file and specify the number of rows for each smaller
-            file.
+            Sube tu archivo y especifica el número de filas para cada archivo más pequeño.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
-            <Label>1. Upload File</Label>
+            <Label>1. Sube tu archivo</Label>
             <div className="flex items-center justify-center w-full">
               <Label
                 htmlFor="dropzone-file"
@@ -86,8 +85,8 @@ export default function ExcelSplitterPage() {
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <UploadCloud className="w-8 h-8 mb-3 text-muted-foreground" />
                   <p className="mb-2 text-sm text-muted-foreground">
-                    <span className="font-semibold">Click to upload</span> or
-                    drag and drop
+                    <span className="font-semibold">Haz clic para subir</span> o
+                    arrastra y suelta
                   </p>
                   <p className="text-xs text-muted-foreground">XLSX, XLS</p>
                 </div>
@@ -121,11 +120,11 @@ export default function ExcelSplitterPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="rows-per-file">2. Rows Per File</Label>
+            <Label htmlFor="rows-per-file">2. Filas por archivo</Label>
             <Input
               id="rows-per-file"
               type="number"
-              placeholder="e.g., 10000"
+              placeholder="p. ej., 10000"
               value={rowsPerFile}
               onChange={(e) => setRowsPerFile(e.target.value)}
               className="max-w-xs"
@@ -138,7 +137,7 @@ export default function ExcelSplitterPage() {
             className="w-full sm:w-auto bg-primary hover:bg-primary/90"
           >
             <Archive className="mr-2 h-4 w-4" />
-            {isSplitting ? 'Splitting...' : 'Split & Download ZIP'}
+            {isSplitting ? 'Dividiendo...' : 'Dividir y descargar ZIP'}
           </Button>
         </CardContent>
       </Card>

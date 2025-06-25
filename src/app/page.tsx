@@ -17,22 +17,22 @@ interface Tool {
 
 const tools: Tool[] = [
   {
-    title: 'Excel to SQL Converter',
+    title: 'Convertidor de Excel a SQL',
     description:
-      'Effortlessly convert your Excel files into SQL insert statements.',
+      'Convierte sin esfuerzo tus archivos de Excel en sentencias INSERT de SQL.',
     href: '/excel-to-sql',
     icon: FileSpreadsheet,
   },
   {
-    title: 'JSON to Excel Converter',
-    description: 'Transform JSON data into well-structured Excel spreadsheets.',
+    title: 'Convertidor de JSON a Excel',
+    description: 'Transforma datos JSON en hojas de cálculo de Excel bien estructuradas.',
     href: '/json-to-excel',
     icon: Braces,
   },
   {
-    title: 'Excel Splitter',
+    title: 'Divisor de Excel',
     description:
-      'Split large Excel files into smaller parts and compress them.',
+      'Divide archivos grandes de Excel en partes más pequeñas y comprímelas.',
     href: '/excel-splitter',
     icon: Scissors,
   },
@@ -61,10 +61,10 @@ export default function Home() {
     <main>
       <div className="mb-8 space-y-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          MultiTool Suite Dashboard
+          Panel de la Suite de Herramientas
         </h1>
         <p className="text-lg text-muted-foreground">
-          Welcome! Select a tool to get started.
+          ¡Bienvenido! Selecciona una herramienta para comenzar.
         </p>
       </div>
       <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">

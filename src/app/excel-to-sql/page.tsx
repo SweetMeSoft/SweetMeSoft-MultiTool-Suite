@@ -33,8 +33,8 @@ export default function ExcelToSqlPage() {
   const handleConvert = () => {
     if (!file) {
       toast({
-        title: 'No file selected',
-        description: 'Please select an Excel file to convert.',
+        title: 'Ningún archivo seleccionado',
+        description: 'Por favor, selecciona un archivo de Excel para convertir.',
         variant: 'destructive',
       });
       return;
@@ -42,7 +42,7 @@ export default function ExcelToSqlPage() {
     setIsConverting(true);
     // Mock conversion
     setTimeout(() => {
-      const mockSql = `INSERT INTO your_table_name (column1, column2, column3) VALUES\n('data1', 'data2', 'data3'),\n('data4', 'data5', 'data6'),\n('data7', 'data8', 'data9');\n-- This is mock data based on '${file.name}'. Automatic column detection is simulated.`;
+      const mockSql = `INSERT INTO nombre_de_tu_tabla (columna1, columna2, columna3) VALUES\n('dato1', 'dato2', 'dato3'),\n('dato4', 'dato5', 'dato6'),\n('dato7', 'dato8', 'dato9');\n-- Estos son datos de prueba basados en '${file.name}'. La detección automática de columnas es simulada.`;
       setSqlOutput(mockSql);
       setIsConverting(false);
     }, 1500);
@@ -54,24 +54,24 @@ export default function ExcelToSqlPage() {
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
     toast({
-      title: 'Copied to clipboard!',
-      description: 'The SQL output has been copied.',
+      title: '¡Copiado al portapapeles!',
+      description: 'La salida SQL ha sido copiada.',
     });
   };
 
   return (
     <main>
       <PageHeader
-        title="Excel to SQL Converter"
-        description="Upload an Excel file to automatically generate SQL INSERT statements."
+        title="Convertidor de Excel a SQL"
+        description="Sube un archivo de Excel para generar automáticamente sentencias INSERT de SQL."
       />
 
       <div className="grid gap-8 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>1. Upload File</CardTitle>
+            <CardTitle>1. Sube tu archivo</CardTitle>
             <CardDescription>
-              Select the .xlsx or .xls file you want to convert.
+              Selecciona el archivo .xlsx o .xls que deseas convertir.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -83,8 +83,8 @@ export default function ExcelToSqlPage() {
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
                   <p className="mb-2 text-sm text-muted-foreground">
-                    <span className="font-semibold">Click to upload</span> or
-                    drag and drop
+                    <span className="font-semibold">Haz clic para subir</span> o
+                    arrastra y suelta
                   </p>
                   <p className="text-xs text-muted-foreground">
                     XLSX, XLS (MAX. 5MB)
@@ -125,7 +125,7 @@ export default function ExcelToSqlPage() {
               disabled={!file || isConverting}
               className="w-full bg-primary hover:bg-primary/90"
             >
-              {isConverting ? 'Converting...' : 'Convert to SQL'}
+              {isConverting ? 'Convirtiendo...' : 'Convertir a SQL'}
             </Button>
           </CardContent>
         </Card>
@@ -133,9 +133,9 @@ export default function ExcelToSqlPage() {
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
-                <CardTitle>2. SQL Output</CardTitle>
+                <CardTitle>2. Salida SQL</CardTitle>
                 <CardDescription>
-                  Your generated SQL code will appear here.
+                  Tu código SQL generado aparecerá aquí.
                 </CardDescription>
               </div>
               {sqlOutput && (
@@ -157,7 +157,7 @@ export default function ExcelToSqlPage() {
           <CardContent>
             <div className="relative h-96 w-full bg-muted rounded-md overflow-auto">
               <pre className="p-4 text-sm font-mono text-foreground whitespace-pre-wrap">
-                {sqlOutput || 'Awaiting file conversion...'}
+                {sqlOutput || 'Esperando la conversión del archivo...'}
               </pre>
             </div>
           </CardContent>

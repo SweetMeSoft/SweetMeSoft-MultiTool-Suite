@@ -21,10 +21,10 @@ import {
 import { useState } from 'react';
 
 const links = [
-  { href: '/', label: 'Dashboard', icon: LayoutGrid },
-  { href: '/excel-to-sql', label: 'Excel to SQL', icon: FileSpreadsheet },
-  { href: '/json-to-excel', label: 'JSON to Excel', icon: Braces },
-  { href: '/excel-splitter', label: 'Excel Splitter', icon: Scissors },
+  { href: '/', label: 'Panel', icon: LayoutGrid },
+  { href: '/excel-to-sql', label: 'Excel a SQL', icon: FileSpreadsheet },
+  { href: '/json-to-excel', label: 'JSON a Excel', icon: Braces },
+  { href: '/excel-splitter', label: 'Divisor de Excel', icon: Scissors },
 ];
 
 export function AppHeader() {
@@ -56,7 +56,7 @@ export function AppHeader() {
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">Open Menu</span>
+                <span className="sr-only">Abrir Menú</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left">

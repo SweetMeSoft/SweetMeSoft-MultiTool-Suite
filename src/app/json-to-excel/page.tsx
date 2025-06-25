@@ -25,8 +25,8 @@ export default function JsonToExcelPage() {
       JSON.parse(jsonInput);
     } catch (error) {
       toast({
-        title: 'Invalid JSON',
-        description: 'Please enter valid JSON data.',
+        title: 'JSON inválido',
+        description: 'Por favor, introduce datos JSON válidos.',
         variant: 'destructive',
       });
       return;
@@ -34,16 +34,16 @@ export default function JsonToExcelPage() {
 
     setIsConverting(true);
     toast({
-      title: 'Conversion in progress...',
-      description: 'Your Excel file will be downloaded shortly.',
+      title: 'Conversión en progreso...',
+      description: 'Tu archivo Excel se descargará en breve.',
     });
     setTimeout(() => {
       // In a real app, this would trigger a file download generated from the JSON.
       // For this mock, we just show a success message.
       setIsConverting(false);
       toast({
-        title: 'Conversion Complete!',
-        description: 'Mock file download initiated.',
+        title: '¡Conversión completada!',
+        description: 'Descarga de archivo de prueba iniciada.',
       });
     }, 2000);
   };
@@ -51,20 +51,20 @@ export default function JsonToExcelPage() {
   return (
     <main>
       <PageHeader
-        title="JSON to Excel Converter"
-        description="Paste your JSON data to convert it into an Excel spreadsheet."
+        title="Convertidor de JSON a Excel"
+        description="Pega tus datos JSON para convertirlos en una hoja de cálculo de Excel."
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>1. Paste JSON Data</CardTitle>
+          <CardTitle>1. Pega los datos JSON</CardTitle>
           <CardDescription>
-            Enter the JSON array of objects you wish to convert.
+            Introduce el array de objetos JSON que deseas convertir.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
-            placeholder='[{"id": 1, "name": "Item A"}, {"id": 2, "name": "Item B"}]'
+            placeholder='[{"id": 1, "nombre": "Artículo A"}, {"id": 2, "nombre": "Artículo B"}]'
             className="min-h-[300px] font-mono"
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
@@ -75,7 +75,7 @@ export default function JsonToExcelPage() {
             className="w-full sm:w-auto bg-primary hover:bg-primary/90"
           >
             <Download className="mr-2 h-4 w-4" />
-            {isConverting ? 'Converting...' : 'Convert & Download Excel'}
+            {isConverting ? 'Convirtiendo...' : 'Convertir y descargar Excel'}
           </Button>
         </CardContent>
       </Card>
