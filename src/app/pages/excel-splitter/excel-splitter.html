@@ -1,1 +1,92 @@
-<p>excel-splitter works!</p>
+<div class="excel-splitter-container">
+  <h2>Dividir Archivo Excel</h2>
+
+  <!-- Sección de carga de archivo -->
+  <div class="input-section">
+    <label for="excelFile">Subir archivo Excel:</label>
+    <input id="excelFile" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" (change)="onFileSelected($event)">
+    <div *ngIf="fileName" class="file-info">
+      <span class="file-name">{{ fileName }}</span>
+      <span *ngIf="isLoading" class="loading-text">Analizando archivo...</span>
+    </div>
+  </div>
+
+  <!-- Mensajes de error -->
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <!-- Información del archivo Excel -->
+  <div *ngIf="excelSheets.length > 0 && !error" class="excel-info-section">
+    <h3>Información del Archivo</h3>
+    
+    <div class="excel-summary">
+      <div class="summary-item">
+        <strong>Hojas:</strong> {{ excelSheets.length }}
+      </div>
+      <div class="summary-item">
+        <strong>Total de filas:</strong> {{ totalRows }}
+      </div>
+    </div>
+
+    <div class="sheets-info">
+      <h4>Detalles por hoja:</h4>
+      <div class="sheet-list">
+        <div *ngFor="let sheet of excelSheets" class="sheet-item">
+          <span class="sheet-name">{{ sheet.name }}</span>
+          <span class="sheet-rows">{{ sheet.data.length > 0 ? sheet.data.length - 1 : 0 }} filas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuración de división -->
+    <div class="config-section">
+      <h4>Configuración de División</h4>
+      <div class="config-row">
+        <label for="rowsPerFile">Filas por archivo:</label>
+        <input 
+          id="rowsPerFile" 
+          type="number" 
+          [(ngModel)]="rowsPerFile" 
+          (ngModelChange)="onRowsPerFileChange()"
+          min="1" 
+          max="100000"
+          class="rows-input">
+      </div>
+      
+      <div class="estimation">
+        <p><strong>Archivos estimados:</strong> {{ estimatedFiles }}</p>
+        <p *ngIf="estimatedFiles > 20" class="warning">
+          ⚠️ Se generarán muchos archivos. Considera aumentar el número de filas por archivo.
+        </p>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="button-group">
+      <button class="btn-success" (click)="dividirExcel()" [disabled]="isLoading || estimatedFiles === 0">
+        {{ isLoading ? 'Dividiendo archivo...' : 'Dividir y Descargar ZIP' }}
+      </button>
+      <button class="btn-secondary" (click)="limpiar()">
+        Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje de ayuda -->
+  <div class="help-section" *ngIf="excelSheets.length === 0 && !error">
+    <h4>¿Cómo usar esta herramienta?</h4>
+    <ol>
+      <li>Sube un archivo Excel (.xlsx o .xls)</li>
+      <li>El archivo se analizará automáticamente y verás la información de las hojas</li>
+      <li>Configura cuántas filas quieres por cada archivo dividido</li>
+      <li>Haz clic en "Dividir y Descargar ZIP" para obtener los archivos</li>
+    </ol>
+    <div class="tips">
+      <h5>Consejos:</h5>
+      <ul>
+        <li>Para archivos con muchas filas, usa 1000-5000 filas por archivo</li>
+        <li>Los archivos se descargarán en un ZIP con nombres como "Hoja1_part_1.xlsx"</li>
+        <li>Los encabezados se incluyen en cada archivo dividido</li>
+      </ul>
+    </div>
+  </div>
+</div>

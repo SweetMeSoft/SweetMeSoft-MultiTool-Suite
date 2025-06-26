@@ -1,1 +1,68 @@
-<p>json-to-excel works!</p>
+<div class="json-to-excel-container">
+  <h2>Convertir JSON a Excel</h2>
+
+  <!-- Sección de carga de archivo -->
+  <div class="input-section">
+    <label for="jsonFile">Subir archivo JSON:</label>
+    <input id="jsonFile" type="file" accept=".json,application/json" (change)="onFileSelected($event)">
+    <div *ngIf="fileName" class="file-info">
+      <span class="file-name">{{ fileName }}</span>
+      <span *ngIf="isLoading" class="loading-text">Cargando...</span>
+    </div>
+  </div>
+
+  <div class="separator">O</div>
+
+  <!-- Sección de texto JSON -->
+  <div class="input-section">
+    <label for="jsonTextarea">Pega tu JSON aquí:</label>
+    <textarea 
+      id="jsonTextarea" 
+      rows="10" 
+      [(ngModel)]="jsonText" 
+      #jsonInput 
+      (input)="onJsonTextChange(jsonInput.value)"
+      placeholder='Ejemplo: [{"nombre": "Juan", "edad": 30}, {"nombre": "Ana", "edad": 25}]'>
+    </textarea>
+  </div>
+
+  <!-- Mensajes de error -->
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <!-- Sección de previsualización y descarga -->
+  <div *ngIf="jsonData && !error" class="preview-section">
+    <h3>JSON Procesado Correctamente</h3>
+    
+    <div class="json-info">
+      <p><strong>Tipo:</strong> {{ Array.isArray(jsonData) ? 'Array' : 'Objeto' }}</p>
+      <p *ngIf="Array.isArray(jsonData)"><strong>Registros:</strong> {{ jsonData.length }}</p>
+      <p *ngIf="Array.isArray(jsonData) && jsonData.length > 0"><strong>Columnas:</strong> {{ Object.keys(jsonData[0]).length }}</p>
+      <p *ngIf="Array.isArray(jsonData) && jsonData.length > 10000" class="warning"><strong>⚠️ Archivo grande:</strong> Este archivo tiene muchos registros y puede tardar en procesarse.</p>
+    </div>
+
+    <div class="preview-container">
+      <h4>Previsualización:</h4>
+      <pre class="json-preview">{{ jsonText | slice:0:500 }}{{ jsonText.length > 500 ? '...' : '' }}</pre>
+    </div>
+
+    <div class="button-group">
+      <button class="btn-success" (click)="descargarExcel()" [disabled]="!Array.isArray(jsonData) || isLoading">
+        {{ isLoading ? 'Generando Excel...' : 'Descargar Excel' }}
+      </button>
+      <button class="btn-secondary" (click)="limpiar()">
+        Limpiar Todo
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje de ayuda -->
+  <div class="help-section" *ngIf="!jsonData && !error">
+    <h4>¿Cómo usar esta herramienta?</h4>
+    <ol>
+      <li>Sube un archivo JSON o pega el contenido JSON en el área de texto</li>
+      <li>El archivo/JSON se procesará automáticamente y verás la previsualización</li>
+      <li>Haz clic en "Descargar Excel" para obtener el archivo</li>
+    </ol>
+    <p><strong>Nota:</strong> El JSON debe ser un array de objetos para poder convertirlo a Excel correctamente.</p>
+  </div>
+</div>
